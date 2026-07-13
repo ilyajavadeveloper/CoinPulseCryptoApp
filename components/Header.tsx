@@ -1,44 +1,90 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+
+import SearchModal from '@/components/SearchModal';
 import { cn } from '@/lib/utils';
 
 const Header = () => {
     const pathname = usePathname();
 
-    return (
-        <header>
-            <div className="main-container inner">
-                <Link href="/">
-                    <Image src="/logo.svg" alt="CoinPulse logo" width={132} height={40} />
-                </Link>
+    const [isSearchOpen, setIsSearchOpen] =
+        useState(false);
 
-                <nav>
+    const openSearchModal = () => {
+        setIsSearchOpen(true);
+    };
+
+    const closeSearchModal = () => {
+        setIsSearchOpen(false);
+    };
+
+    return (
+        <>
+            <header>
+                <div className="main-container inner">
                     <Link
                         href="/"
-                        className={cn('nav-link', {
-                            'is-active': pathname === '/',
-                            'is-home': true,
-                        })}
+                        aria-label="CoinPulse home"
                     >
-                        Home
+                        <Image
+                            src="/logo.svg"
+                            alt="CoinPulse logo"
+                            width={132}
+                            height={40}
+                            priority
+                        />
                     </Link>
 
-                    <p>Search Modal</p>
+                    <nav>
+                        <Link
+                            href="/"
+                            className={cn('nav-link', {
+                                'is-active':
+                                    pathname === '/',
+                                'is-home': true,
+                            })}
+                        >
+                            Home
+                        </Link>
 
-                    <Link
-                        href="/coins"
-                        className={cn('nav-link', {
-                            'is-active': pathname === '/coins',
-                        })}
-                    >
-                        All Coins
-                    </Link>
-                </nav>
-            </div>
-        </header>
+                        <button
+                            type="button"
+                            className="nav-link search-trigger"
+                            onClick={openSearchModal}
+                            aria-label="Open coin search"
+                            aria-haspopup="dialog"
+                            aria-expanded={isSearchOpen}
+                        >
+                            <Search size={17} />
+                            <span>Search</span>
+                        </button>
+
+                        <Link
+                            href="/coins"
+                            className={cn('nav-link', {
+                                'is-active':
+                                    pathname === '/coins' ||
+                                    pathname.startsWith(
+                                        '/coins/',
+                                    ),
+                            })}
+                        >
+                            All Coins
+                        </Link>
+                    </nav>
+                </div>
+            </header>
+
+            <SearchModal
+                isOpen={isSearchOpen}
+                onClose={closeSearchModal}
+            />
+        </>
     );
 };
 
